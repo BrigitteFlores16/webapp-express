@@ -1,16 +1,20 @@
 require("dotenv").config();
 const express = require("express");
-const port = process.env.HOST_PORT;
-const domain = process.env.HOST_DOMAIN;
+const { APP_HOST, APP_PORT } = process.env;
 const connection = require("./configurazione.js");
 const app = express();
 
 const moviesRouter = require("./routers/moviesRouter");
 app.use(express.json());
 app.use(express.static("public"));
-app.use("/", moviesRouter);
+app.use("/movies", moviesRouter);
 
-//SERVER LISTENING
-app.listen(port, () => {
-  console.log(`Server listening at ${domain}:${port}`);
+const notFound = require("./middleware/notFound");
+const errorsHandler = require("./middleware/errorHandler");
+
+app.use(errorsHandler);
+app.use(notFound);
+
+app.listen(APP_PORT, () => {
+  console.log(`Server listening at ${APP_HOST}:${APP_PORT}`);
 });
