@@ -59,9 +59,33 @@ function show(req, res) {
     });
   });
 }
+function storeReview(req, res) {
+  const movieId = req.params.id;
+  const { name, text, vote } = req.body;
+  const sql = `
+  INSERT INTO reviews (name, text, vote, movie_id)
+  VALUES (?, ?, ?, ?)
+  `;
+  connection.query(sql, [name, text, vote, movieId], (err) => {
+    if (err) {
+      console.log(err);
+
+      return res.status(500).json({
+        status: "KO",
+        message: "Database query failed",
+      });
+    }
+
+    res.json({
+      status: "OK",
+      message: "Review added",
+    });
+  });
+}
 
 const genMoviesImage = (imageName) => {
   const { APP_HOST, APP_PORT } = process.env;
   return ` ${APP_HOST}:${APP_PORT}/movies_cover/${imageName}`;
 };
-module.exports = { index, show };
+
+module.exports = { index, show, storeReview };
